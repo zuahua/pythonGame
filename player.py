@@ -7,7 +7,7 @@ class Player():
         self.screen = screen
         self.ai_settings = ai_settings
         # 加载游戏图像并获取其外接矩形
-        self.image = pygame.image.load(r'images\S_Thunder07.bmp')
+        self.image = pygame.image.load(r'images\gamePlayer1.bmp')
         self.rect = self.image.get_rect()
         self.screen_rect = screen.get_rect()
 

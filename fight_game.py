@@ -27,14 +27,14 @@ def run_game():
     # 创建敌人编组
     enemies = Group()
     # 创建敌人群
-    gf.creat_fleet(ai_settings, screen, enemies)
+    gf.creat_fleet(ai_settings, screen, enemies, player)
 
     # 开始游戏主循环
     while True:
         gf.check_event(player, ai_settings, screen, bullets)
         player.update()
-        gf.update_bullets(bullets)
-
+        gf.update_bullets(bullets, enemies, ai_settings, screen, player)
+        gf.update_enemies(enemies, ai_settings)
         gf.update_screen(ai_settings, screen, player, bullets, enemies)
 
 

@@ -8,9 +8,18 @@ class Settings():
         # 玩家的速度
         self.player_speed_factor = 0.5
         # 子弹设置
-        self.bullet_speed_factor = 1
-        self.bullet_width = 3
+        self.bullet_speed_factor = 2
+        self.bullet_width = 4
         self.bullet_height = 15
-        self.bullet_color = (200,0,0)
+        self.bullet_color = (254, 254, 0)
         # 限制屏幕上子弹个数
         self.bullets_allowed = 3
+        # 敌人设置
+        # 敌人右移动速度
+        self.enemy_speed_factor = 0.3
+        # 敌人下移速度
+        self.fleet_drop_speed = 2
+        # 设置敌人移动方向,1为右，-1为左
+        self.fleet_direction = 1
+
+

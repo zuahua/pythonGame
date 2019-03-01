@@ -56,7 +56,7 @@ def check_keyup_event(event, player, bullets):
         player.moving_left = False
 
 
-def update_bullets(bullets):
+def update_bullets(bullets, enemies, ai_settings, screen, player):
     """更新子弹位置，并删除消失的子弹"""
     # 更新子弹位置
     bullets.update()
@@ -64,6 +64,15 @@ def update_bullets(bullets):
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
+
+    # 检查是否有子弹击中了敌人
+    # 如果有，就删除子弹与相应敌人
+    collisions = pygame.sprite.groupcollide(bullets, enemies, True, True)
+    # 在敌人被消灭完时再生成敌人
+    if len(enemies) == 0:
+        # 清空子弹
+        bullets.empty()
+        creat_fleet(ai_settings, screen, enemies, player)
 
 def fire_bullets(player, bullets, ai_settings, screen):
     """如果未达到限制，创建子弹"""
@@ -73,19 +82,61 @@ def fire_bullets(player, bullets, ai_settings, screen):
         bullets.add(new_bullet)
 
 
-def creat_fleet(ai_settings, screen, enemies):
+def creat_fleet(ai_settings, screen, enemies, player):
     """创建一群敌人"""
     # 创建一个敌人并计算一行能容纳的数量
     enemy = Enemy(screen, ai_settings)
-    # 敌人的宽度
     enemy_width = enemy.rect.width
+    number_enemy_x = get_number_enemy_x(ai_settings, enemy_width)
+    number_rows = get_number_row(ai_settings, enemy.rect.height, player.rect.height)
+    # 创建一群敌人
+    for row_number in range(number_rows):
+        for enemy_number in range(number_enemy_x):
+            creat_enemy(ai_settings, screen, enemies, enemy_number, row_number)
+
+
+def get_number_enemy_x(ai_settings, enemy_width):
+    """获取一行能容纳的敌人数"""
     available_space_x = ai_settings.screen_width - (2 * enemy_width)
     number_enemy_x = int(available_space_x / (2 * enemy_width))
+    return number_enemy_x
 
-    # 创建一行敌人
-    for enemy_number in range(number_enemy_x):
-        # 创建一个敌人并将其加入当前行
-        enemy = Enemy(screen, ai_settings)
-        enemy.x = enemy_width + 2 * enemy_width * enemy_number
-        enemy.rect.x = enemy.x
-        enemies.add(enemy)
+
+def creat_enemy(ai_settings, screen, enemies, enemy_number, number_row):
+    """创建一个敌人并将其放在当前行"""
+    enemy = Enemy(screen, ai_settings)
+    # 敌人的宽度
+    enemy_width = enemy.rect.width
+    enemy.x = enemy_width + 2 * enemy_width * enemy_number
+    enemy.rect.x = enemy.x
+    enemy.rect.y = enemy.rect.height + 2 * enemy.rect.height * number_row
+    enemies.add(enemy)
+
+
+def get_number_row(ai_settings, enemy_height, player_height):
+    """计算屏幕能容纳多少行外星人"""
+    available_space_y = ai_settings.screen_height - 3 * enemy_height - player_height
+    number_row = int(available_space_y / (2 * enemy_height))
+    return number_row
+
+def update_enemies(enemies, ai_settings):
+    """检查是否有敌人位于边缘，更新所有敌人位置"""
+    check_fleet_edges(enemies, ai_settings)
+    enemies.update()
+
+def check_fleet_edges(enemies, ai_settings):
+    """有敌人到达边缘采取措施"""
+    for enemy in enemies.sprites():
+        if enemy.check_edge():
+            change_fleet_direction(enemies, ai_settings)
+            break
+
+
+def change_fleet_direction(enemies, ai_settings):
+    """将整群敌人下移并改变敌人移动方向"""
+    for enemy in enemies.sprites():
+        enemy.rect.y += ai_settings.fleet_drop_speed
+    ai_settings.fleet_direction *= -1
+
+
+
