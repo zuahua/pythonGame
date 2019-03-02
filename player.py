@@ -1,9 +1,11 @@
 import pygame
+from pygame.sprite import Sprite
 
-class Player():
+class Player(Sprite):
     """玩家"""
     def __init__(self, screen, ai_settings):
         """"初始化玩家并设置玩家位置"""
+        super(Player, self).__init__()
         self.screen = screen
         self.ai_settings = ai_settings
         # 加载游戏图像并获取其外接矩形
@@ -40,3 +42,8 @@ class Player():
 
         # 根据center值更新rect
         self.rect.centerx = self.center
+
+    def center_player(self):
+        """让玩家居中"""
+        self.rect.centerx = self.screen_rect.centerx
+        self.rect.bottom = self.screen_rect.bottom
